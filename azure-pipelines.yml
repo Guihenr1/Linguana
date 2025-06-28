@@ -11,6 +11,7 @@ variables:
   azureSubscription: 'Azure subscription 1'
   webAppName: 'Linguana-API'
   environmentName: 'dev'
+  keyVaultName: 'kv-linguana-dev'
 
 stages:
   - stage: Build
@@ -80,6 +81,13 @@ stages:
           runOnce:
             deploy:
               steps:
+                - task: AzureKeyVault@2
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    KeyVaultName: $(keyVaultName)
+                    SecretsFilter: 'OpenAiApiKey'
+                    RunAsPreJob: true
+
                 - task: AzureWebApp@1
                   displayName: 'Deploy to Azure Web App'
                   inputs:

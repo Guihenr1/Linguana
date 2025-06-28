@@ -1,7 +1,12 @@
+using Azure.Identity;
 using Linguana.API.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string keyVaultUri = "https://kv-linguana-dev.vault.azure.net/";
+builder.Configuration.AddAzureKeyVault(
+    new Uri(keyVaultUri),
+    new DefaultAzureCredential());
 // Add services to the container.
 
 builder.Services.AddControllers();
