@@ -1,6 +1,6 @@
 # azure-pipelines.yml
 trigger:
-  - main
+  - master
 
 pool:
   vmImage: 'ubuntu-22.04'  # Using Ubuntu 22.04 LTS which has better compatibility
