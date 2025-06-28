@@ -3,10 +3,38 @@ using Linguana.API.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string keyVaultUri = "https://kv-linguana-dev.vault.azure.net/";
-builder.Configuration.AddAzureKeyVault(
-    new Uri(keyVaultUri),
-    new DefaultAzureCredential());
+// Add this logging configuration
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
+// Modify the Key Vault configuration to include specific options
+var keyVaultUri = "https://kv-linguana-dev.vault.azure.net/";
+var credentialOptions = new DefaultAzureCredentialOptions
+{
+    Retry = { MaxRetries = 3, NetworkTimeout = TimeSpan.FromSeconds(5) },
+    ExcludeVisualStudioCredential = true,
+    ExcludeAzureCliCredential = false,
+    ExcludeInteractiveBrowserCredential = true,
+    ExcludeManagedIdentityCredential = false
+};
+
+try
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential(credentialOptions));
+}
+catch (Exception ex)
+{
+    builder.Logging.AddConsole();
+    var logger = LoggerFactory.Create(config => 
+    {
+        config.AddConsole();
+    }).CreateLogger("Program");
+    
+    logger.LogError(ex, "Failed to configure Azure Key Vault");
+}
+
 // Add services to the container.
 
 builder.Services.AddControllers();
