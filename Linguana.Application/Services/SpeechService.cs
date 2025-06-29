@@ -20,6 +20,7 @@ public class SpeechService : ISpeechService
     public async Task<string> TranscribeAudioAsync(IFormFile audioFile)
     {
         var openAiApiKey = _configuration["OpenAiApiKey"];
+        _logger.LogInformation("Transcribing audio file", openAiApiKey);
         
         if (string.IsNullOrEmpty(openAiApiKey))
         {
