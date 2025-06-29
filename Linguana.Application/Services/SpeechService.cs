@@ -20,7 +20,8 @@ public class SpeechService : ISpeechService
     public async Task<string> TranscribeAudioAsync(IFormFile audioFile)
     {
         var openAiApiKey = _configuration["OpenAiApiKey"];
-        _logger.LogInformation("Transcribing audio file", openAiApiKey);
+        _logger.LogInformation("OpenAI API key found in configuration");
+        _logger.LogInformation(openAiApiKey);
         
         if (string.IsNullOrEmpty(openAiApiKey))
         {
