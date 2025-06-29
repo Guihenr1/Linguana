@@ -23,6 +23,29 @@ try
     builder.Configuration.AddAzureKeyVault(
         new Uri(keyVaultUri),
         new DefaultAzureCredential(credentialOptions));
+        
+    // Add debug logging to check Key Vault configuration
+    var logger = LoggerFactory.Create(config => 
+    {
+        config.AddConsole();
+    }).CreateLogger("Program");
+    
+    logger.LogInformation("Azure Key Vault configured with URI: {uri}", keyVaultUri);
+    
+    // Check if we can access the configuration
+    var allKeys = builder.Configuration.AsEnumerable().ToList();
+    logger.LogInformation("Total configuration keys: {count}", allKeys.Count);
+    
+    // Specifically check for OpenAiApiKey
+    var openAiKey = builder.Configuration["OpenAiApiKey"];
+    logger.LogInformation("OpenAiApiKey exists: {exists}", !string.IsNullOrEmpty(openAiKey));
+    
+    // List all available keys from Key Vault (just names, not values)
+    var keyVaultKeys = allKeys
+        .Where(k => k.Key.StartsWith("OpenAi"))
+        .Select(k => k.Key)
+        .ToList();
+    logger.LogInformation("Found Key Vault keys: {keys}", string.Join(", ", keyVaultKeys));
 }
 catch (Exception ex)
 {
